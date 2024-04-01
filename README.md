@@ -14,9 +14,12 @@ By the way, the word dictionnary used in this tool has been also taken from the 
 ## Usage
 
 1. Make sure you have Python installed on your system.
-2. Clone this repository or download the source file.
-3. Run the program using the command `python wordle.py`.
-4. Follow the prompts to provide hints using this format: `(list_of_missing_letters)--x-X` using `-` for missing letter, lowercase letter for a letter at a wrong place (orange) and uppercase letter for a letter at the correct place (green). Some examples:
+1. Clone this repository or download the source file.
+1. Run the program using the command `python wordle.py`.
+1. Follow the prompts to provide hints using this format: `(list_of_missing_letters)--x-X` using:
+	1. `-` for missing letter,
+	1. lowercase letter for a letter at a wrong place (orange)
+	1. uppercase letter for a letter at the correct place (green). Some examples:
 
 ## Examples
 
