@@ -46,7 +46,7 @@ def filter_words(words, possible_letters):
     return filtered_words
 
 def main():
-    dictionary_file = "dictionary.txt"
+    dictionary_file = "french_5.txt"
     words = load_dictionary(dictionary_file)
     possible_letters = initialize_possible_letters()
     log_possible_letters(possible_letters)
