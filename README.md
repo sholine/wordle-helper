@@ -18,8 +18,8 @@ By the way, the word dictionnary used in this tool has been also taken from the 
 1. Run the program using the command `python wordle.py`.
 1. Follow the prompts to provide hints using this format: `(list_of_missing_letters)--x-X` using:
 	1. `-` for missing letter,
-	1. lowercase letter for a letter at a wrong place (orange)
-	1. uppercase letter for a letter at the correct place (green).
+	1. **lowercase** letter for a letter at a wrong place (orange)
+	1. **uppercase** letter for a letter at the correct place (green).
 
 ## Examples
 
