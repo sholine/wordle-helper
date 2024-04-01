@@ -1,4 +1,5 @@
 import string
+import sys
 
 def load_dictionary(file_path):
     with open(file_path, 'r') as file:
@@ -34,7 +35,10 @@ def update_possible_letters(possible_letters, input_string):
             possible_letters['must_have'].append(char)
         elif char.isupper():
             possible_letters['word'][i] = [char.lower()]
-    log_possible_letters(possible_letters)
+
+    if "-v" in sys.argv or "--verbose" in sys.argv:
+        log_possible_letters(possible_letters)
+
     return True
     
 
@@ -49,7 +53,6 @@ def main():
     dictionary_file = "french_5.txt"
     words = load_dictionary(dictionary_file)
     possible_letters = initialize_possible_letters()
-    log_possible_letters(possible_letters)
 
     while True:
         input_string = input("Enter input string (press Enter to exit): ")
