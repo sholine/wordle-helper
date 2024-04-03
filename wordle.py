@@ -1,5 +1,17 @@
 import string
 import sys
+import yaml
+
+def load_occurrences(file_path="occurences.yaml"):
+    try:
+        with open(file_path, 'r') as file:
+            occurrences_data = yaml.safe_load(file)
+            return occurrences_data
+    except FileNotFoundError:
+        print(f"File '{file_path}' not found. Using default occurrences.")
+        return {
+            letter: 1 for letter in string.ascii_lowercase
+        }
 
 def load_dictionary(file_path):
     with open(file_path, 'r') as file:
@@ -40,17 +52,18 @@ def update_possible_letters(possible_letters, input_string):
         log_possible_letters(possible_letters)
 
     return True
-    
 
-def filter_words(words, possible_letters):
-    filtered_words = []
-    for word in words:
-        if all(word[i] in possible_letters['word'][i] for i in range(5)) and all(letter in word for letter in possible_letters['must_have']):
-            filtered_words.append(word)
+def filter_words(words, possible_letters, occurrences):
+    def sort_key(word):
+        return sum(occurrences[letter] for letter in word if letter in occurrences)
+    
+    filtered_words = [word for word in words if all(word[i] in possible_letters['word'][i] for i in range(5))]
+    filtered_words.sort(key=sort_key, reverse=True)
     return filtered_words
 
 def main():
     dictionary_file = "french_5.txt"
+    occurrences = load_occurrences()
     words = load_dictionary(dictionary_file)
     possible_letters = initialize_possible_letters()
 
@@ -60,7 +73,7 @@ def main():
             break
         
         if update_possible_letters(possible_letters, input_string):
-            filtered_words = filter_words(words, possible_letters)
+            filtered_words = filter_words(words, possible_letters, occurrences)
             print("Possible words:")
             for word in filtered_words:
                 print(word)
