@@ -1,17 +1,48 @@
 import string
 import sys
-import yaml
 
-def load_occurrences(file_path="occurences.yaml"):
-    try:
-        with open(file_path, 'r') as file:
-            occurrences_data = yaml.safe_load(file)
-            return occurrences_data
-    except FileNotFoundError:
-        print(f"File '{file_path}' not found. Using default occurrences.")
-        return {
-            letter: 1 for letter in string.ascii_lowercase
-        }
+def compute_word_score(word):
+    # Définition des fréquences des lettres en français
+    letters_frequency = {
+        'e': 14.715,
+        'a': 7.636,
+        's': 7.245,
+        'i': 6.311,
+        'n': 6.311,
+        't': 5.697,
+        'r': 5.68,
+        'u': 5.68,
+        'l': 5.451,
+        'o': 5.102,
+        'd': 3.669,
+        'c': 3.384,
+        'm': 2.968,
+        'p': 2.921,
+        'v': 1.628,
+        'g': 1.268,
+        'f': 1.066,
+        'b': 0.901,
+        'q': 0.866,
+        'h': 0.737,
+        'x': 0.597,
+        'j': 0.173,
+        'y': 0.166,
+        'z': 0.083,
+        'w': 0.045,
+        'k': 0.022,
+    }
+
+    # Calcul du score en utilisant les fréquences des lettres et en évitant la répétition de lettres
+    score = 0
+    used_letters = set()
+    for letter in word:
+        score += letters_frequency.get(letter, 0)
+        used_letters.add(letter)
+
+    # Bonus pour la variété de lettres (je pondère en multipliant par 3)
+    score += len(used_letters) * 3
+
+    return score
 
 def load_dictionary(file_path):
     with open(file_path, 'r') as file:
@@ -53,17 +84,21 @@ def update_possible_letters(possible_letters, input_string):
 
     return True
 
-def filter_words(words, possible_letters, occurrences):
-    def sort_key(word):
-        return sum(occurrences[letter] for letter in word if letter in occurrences)
-    
-    filtered_words = [word for word in words if all(word[i] in possible_letters['word'][i] for i in range(5))]
-    filtered_words.sort(key=sort_key, reverse=True)
+# Filtre les mots du dictionnaire en fonction des contraintes de lettres connues
+def filter_words(words, possible_letters):
+    filtered_words = []
+    for word in words:
+        if all(word[i] in possible_letters['word'][i] for i in range(5)) and all(letter in word for letter in possible_letters['must_have']):
+            filtered_words.append(word)
     return filtered_words
+
+# Trie les mots en fonction de leur score
+def order_filtered_words(words):
+    mots_tries = sorted(words, key=compute_word_score, reverse=True)
+    return mots_tries
 
 def main():
     dictionary_file = "french_5.txt"
-    occurrences = load_occurrences()
     words = load_dictionary(dictionary_file)
     possible_letters = initialize_possible_letters()
 
@@ -73,7 +108,7 @@ def main():
             break
         
         if update_possible_letters(possible_letters, input_string):
-            filtered_words = filter_words(words, possible_letters, occurrences)
+            filtered_words = order_filtered_words(filter_words(words, possible_letters))
             print("Possible words:")
             for word in filtered_words:
                 print(word)
