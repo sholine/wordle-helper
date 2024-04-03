@@ -98,7 +98,7 @@ def order_filtered_words(words):
     return mots_tries
 
 def main():
-    dictionary_file = "french_5.txt"
+    dictionary_file = "french_5_wordle.txt"
     words = load_dictionary(dictionary_file)
     possible_letters = initialize_possible_letters()
 
