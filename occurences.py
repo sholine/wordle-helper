@@ -1,5 +1,6 @@
 import argparse
 import string
+import yaml
 
 def compter_occurrences(mots):
     # Initialisation du dictionnaire avec des compteurs pour chaque lettre
@@ -20,16 +21,15 @@ def compter_occurrences(mots):
     return occurrences_triees
 
 def ecrire_resultat(resultat, chemin_sortie):
-    # Écriture du résultat dans un fichier
+    # Écriture du résultat dans un fichier YAML
     with open(chemin_sortie, "w") as fichier_sortie:
-        for lettre, occurrence in resultat.items():
-            fichier_sortie.write(f"{lettre}: {occurrence}\n")
+        yaml.dump(resultat, fichier_sortie)
 
 def main():
     # Configuration de l'analyseur d'arguments
-    parser = argparse.ArgumentParser(description="Compte les occurrences de chaque lettre dans un fichier texte et écrit le résultat dans un autre fichier.")
+    parser = argparse.ArgumentParser(description="Compte les occurrences de chaque lettre dans un fichier texte et écrit le résultat dans un fichier YAML.")
     parser.add_argument("fichier_entree", help="Chemin vers le fichier texte d'entrée contenant les mots.")
-    parser.add_argument("fichier_sortie", help="Chemin vers le fichier de sortie où écrire le résultat.")
+    parser.add_argument("-o", "--fichier_sortie", help="Chemin vers le fichier de sortie où écrire le résultat en format YAML. Par défaut, 'occurences.yaml'.")
 
     # Parsing des arguments de la ligne de commande
     args = parser.parse_args()
@@ -37,7 +37,7 @@ def main():
     # Chemin du fichier texte d'entrée
     chemin_entree = args.fichier_entree
     # Chemin du fichier de sortie
-    chemin_sortie = args.fichier_sortie
+    chemin_sortie = args.fichier_sortie if args.fichier_sortie else "occurences.yaml"
 
     try:
         # Lecture du fichier texte
@@ -47,10 +47,10 @@ def main():
         # Calcul des occurrences des lettres dans les mots
         occurrences_lettres = compter_occurrences(mots)
 
-        # Écriture du résultat dans un fichier de sortie
+        # Écriture du résultat dans un fichier YAML de sortie
         ecrire_resultat(occurrences_lettres, chemin_sortie)
 
-        print("Le résultat a été écrit dans le fichier de sortie.")
+        print("Le résultat a été écrit dans le fichier YAML de sortie.")
 
     except FileNotFoundError:
         print("Le fichier spécifié est introuvable.")
