@@ -1,5 +1,6 @@
 import string
 import sys
+import re
 
 def compute_word_score(word):
     # Définition des fréquences des lettres en français
@@ -70,11 +71,12 @@ def update_possible_letters(possible_letters, input_string):
     
     for letter in excluded_letters:
         for i in range(5):
-            possible_letters['word'][i] = [l for l in possible_letters['word'][i] if l != letter]
+            if (len(possible_letters['word'][i]) > 1 and letter in possible_letters['word'][i]):
+              possible_letters['word'][i].remove(letter)
 
     for i, char in enumerate(input_string):
         if char.islower():
-            possible_letters['word'][i] = [letter for letter in possible_letters['word'][i] if letter != char]
+            possible_letters['word'][i].remove(char)
             possible_letters['must_have'].append(char)
         elif char.isupper():
             possible_letters['word'][i] = [char.lower()]
@@ -84,13 +86,28 @@ def update_possible_letters(possible_letters, input_string):
 
     return True
 
+def generate_regex_from_letters(word):
+  regex = '^'
+  for position in word:
+    if len(position) == 1:
+      regex += position[0]  # Ajoute la lettre seule à l'expression régulière
+    else:
+      regex += '[' + ''.join(position) + ']'  # Ajoute les lettres entre crochets à l'expression régulière
+  regex += '$'
+  return regex
+
 # Filtre les mots du dictionnaire en fonction des contraintes de lettres connues
 def filter_words(words, possible_letters):
-    filtered_words = []
-    for word in words:
-        if all(word[i] in possible_letters['word'][i] for i in range(5)) and all(letter in word for letter in possible_letters['must_have']):
-            filtered_words.append(word)
-    return filtered_words
+    regex = generate_regex_from_letters(possible_letters['word'])
+    #print("Regex : ["+regex+"]")
+    first_filtering = list(filter(lambda word: re.match(regex, word), words))
+    #print("First filter : ",len(first_filtering))
+    second_filtering = []
+    for word in first_filtering:
+        if all(letter in word for letter in possible_letters['must_have']):
+            second_filtering.append(word)
+    #print("Second filter : ",len(second_filtering))
+    return second_filtering
 
 # Trie les mots en fonction de leur score
 def order_filtered_words(words):
