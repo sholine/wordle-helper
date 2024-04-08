@@ -3,6 +3,8 @@ import sys
 import re
 import os
 
+from possible_letters import PossibleLetters
+
 # Compute word scoring using French letters frequency and letters reuse
 def compute_word_score(word):
   # French letters frequencies
@@ -54,40 +56,24 @@ def load_dictionary(file_path):
   with open(file_path, 'r') as file:
     return [word.strip().lower() for word in file.readlines()]
 
-def initialize_possible_letters():
-  possible_letters = {
-    'word': [list(string.ascii_lowercase) for _ in range(5)],
-    'must_have': []
-  }
-  return possible_letters
-
-def log_possibilities(possible_letters):
-  for key, value in possible_letters.items():
-    if key == 'word':
-      print(f"[{key}]")
-      for i, letters in enumerate(value):
-        print(f"  [Position {i}] => {letters}")
-    elif key == 'must_have':
-      print(f"[{key}] => {''.join(value)}")
-
-def update_possible_letters(possible_letters, input_string):
+def update_possible_letters(possible_letters: PossibleLetters, input_string):
   excluded_letters = input_string[input_string.find('(')+1:input_string.find(')')]
   input_string = input_string[input_string.find(')')+1:]
   
   for letter in excluded_letters:
     for i in range(5):
-      if (len(possible_letters['word'][i]) > 1 and letter in possible_letters['word'][i]):
-        possible_letters['word'][i].remove(letter)
+      if (len(possible_letters.word[i]) > 1 and letter in possible_letters.word[i]):
+        possible_letters.word[i].remove(letter)
 
   for i, char in enumerate(input_string):
     if char.islower():
-      possible_letters['word'][i].remove(char)
-      possible_letters['must_have'].append(char)
+      possible_letters.word[i].remove(char)
+      possible_letters.must_have.append(char)
     elif char.isupper():
-      possible_letters['word'][i] = [char.lower()]
+      possible_letters.word[i] = [char.lower()]
 
   if "-v" in sys.argv or "--verbose" in sys.argv:
-    log_possibilities(possible_letters)
+    possible_letters.print()
 
   return True
 
@@ -102,14 +88,14 @@ def generate_regex_from_letters(word):
   return regex
 
 # Filtre les mots du dictionnaire en fonction des contraintes de lettres connues
-def filter_words(words, possible_letters):
-  regex = generate_regex_from_letters(possible_letters['word'])
+def filter_words(words, possible_letters: PossibleLetters):
+  regex = generate_regex_from_letters(possible_letters.word)
   #print("Regex : ["+regex+"]")
   first_filtering = list(filter(lambda word: re.match(regex, word), words))
   #print("First filter : ",len(first_filtering))
   second_filtering = []
   for word in first_filtering:
-    if all(letter in word for letter in possible_letters['must_have']):
+    if all(letter in word for letter in possible_letters.must_have):
       second_filtering.append(word)
   #print("Second filter : ",len(second_filtering))
   return second_filtering
@@ -135,7 +121,7 @@ def print_proposals(filtered_words):
 def main():
   dictionary_file = "french_5_wordle.txt"
   words = load_dictionary(dictionary_file)
-  possible_letters = initialize_possible_letters()
+  possible_letters = PossibleLetters(5)
 
   while True:
     input_string = input("Enter input string (press Enter to exit): ")
