@@ -32,7 +32,8 @@ class PossibleLetters:
 
         for i, char in enumerate(input_string):
             if char.islower():
-                self.word[i].remove(char)
+                if char in self.word[i]:
+                  self.word[i].remove(char)
                 self.must_have.append(char)
             elif char.isupper():
                 self.word[i] = [char.lower()]
