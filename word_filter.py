@@ -26,7 +26,7 @@ class WordFilter:
 
         return self.filtered_words
 
-    def __compute_word_score(self, word):
+    def _compute_word_score(self, word):
         # French letters frequencies
         letters_frequency = {
             'e': 14.715,
@@ -73,7 +73,7 @@ class WordFilter:
         return score
 
     def order_filtered_words(self):
-        self.filtered_words = sorted(self.filtered_words, key=self.__compute_word_score, reverse=True)
+        self.filtered_words = sorted(self.filtered_words, key=self._compute_word_score, reverse=True)
 
     def __str__(self):
         output = ""
