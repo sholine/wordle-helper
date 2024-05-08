@@ -13,7 +13,23 @@ class PossibleLetters:
             output += f"  [Position {i}] => {letters}\n"
         output += f"[Must Have] => {self.must_have}\n"
         return output
-    
+
+    def _apply_heuristics(self):
+        # Première heuristique : si une lettre est mal placée (dans "Must have" et qu'il n'y a qu'une seule possibilité où elle peut se trouver, alors on sait où elle va aller)
+        for letter in self.must_have:
+          index_unique_occurrence = None
+          for i, letters in enumerate(self.word):
+              if letter in letters and len(letters) > 1:
+                  if index_unique_occurrence is None:
+                      index_unique_occurrence = i
+                  else:
+                      index_unique_occurrence = None
+                      break
+          if index_unique_occurrence is not None:
+              self.word[index_unique_occurrence] = [letter]
+              if letter.lower() in self.must_have:
+                  self.must_have.remove(letter.lower())
+
     def update_possible_letters(self, input_string: string):
         """Update all letters remaining possibilities regarding the user's input string
 
@@ -35,12 +51,17 @@ class PossibleLetters:
             if char.islower():
                 if char in self.word[i]:
                   self.word[i].remove(char)
-                self.must_have.append(char)
+                if char not in self.must_have:
+                  self.must_have.append(char)
             elif char.isupper():
                 self.word[i] = [char.lower()]
+                if char.lower() in self.must_have:
+                  self.must_have.remove(char.lower())
+
+        self._apply_heuristics()
 
         if "-v" in sys.argv or "--verbose" in sys.argv:
-            self.print()
+            print(self)
     
     def generate_regex_from_letters(self):
         regex = '^'
