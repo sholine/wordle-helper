@@ -75,16 +75,17 @@ class WordFilter:
     def order_filtered_words(self):
         self.filtered_words = sorted(self.filtered_words, key=self.__compute_word_score, reverse=True)
 
-    def print(self):
+    def __str__(self):
+        output = ""
         # Récupérer la largeur du terminal
         terminal_width = os.get_terminal_size().columns
 
-        print("Possible words:")
+        output += "Possible words:\n"
         line_width = 0
         for word in self.filtered_words:
             if line_width + len(word) + 1 > terminal_width:
-                print("")
+                output += "\n"
                 line_width = 0
-            print(word, end=" ")
+            output += word + " "
             line_width += len(word) + 1
-        print("")
+        return output

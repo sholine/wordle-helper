@@ -7,11 +7,12 @@ class PossibleLetters:
         self.word = [list(string.ascii_lowercase) for _ in range(words_size)]
         self.must_have = []
 
-    def print(self):
-        print(f"[Word]")
+    def __str__(self):
+        output = "[Word]\n"
         for i, letters in enumerate(self.word):
-            print(f"  [Position {i}] => {letters}")
-        print(f"[Must Have] => {''.join(self.must_have)}")
+            output += f"  [Position {i}] => {letters}\n"
+        output += f"[Must Have] => {self.must_have}\n"
+        return output
     
     def update_possible_letters(self, input_string: string):
         """Update all letters remaining possibilities regarding the user's input string
