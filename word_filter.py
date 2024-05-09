@@ -20,7 +20,8 @@ class WordFilter:
 
         # First filtering on possible remaining letters
         regex = possible_letters.generate_regex_from_letters()
-        self.filtered_words = filter(lambda word: re.match(regex, word), self.filtered_words)
+        compiled_regex = re.compile(regex)  # Compiler l'expression régulière une seule fois
+        self.filtered_words = filter(lambda word: compiled_regex.match(word), self.filtered_words)
         #print("First filter : ", len(filtered_words))
 
         # Second filtering: words MUST contains some letters
@@ -128,7 +129,9 @@ class WordFilter:
             regex += ''.join(f'(?=.*{lettre[0]})' for lettre in currentLetters)
             regex += '[a-zA-Z]*$'
 
-            res = [word for word in self.all_words if re.match(regex, word)]
+            compiled_regex = re.compile(regex)  # Compiler l'expression régulière une seule fois
+            res = [word for word in self.all_words if compiled_regex.match(word)]
+
           if len(res) > 0:
             break
         
