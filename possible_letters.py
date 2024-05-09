@@ -17,7 +17,7 @@ class PossibleLetters:
         return output
 
     def _apply_heuristics(self):
-        # Première heuristique : si une lettre est mal placée (dans "Must have" et qu'il n'y a qu'une seule possibilité où elle peut se trouver, alors on sait où elle va aller)
+        # 1st heuristic: if a letter is not at the good place (in "Must have") and there is only 1 other possibility, then we know where it goes!
         for letter in self.must_have:
           index_unique_occurrence = None
           for i, letters in enumerate(self.word):
@@ -73,9 +73,9 @@ class PossibleLetters:
         regex = '^'
         for possibilities in self.word:
             if len(possibilities) == 1:
-                regex += possibilities[0]  # Ajoute la lettre seule à l'expression régulière
+                regex += possibilities[0] # Add the only possible letter at this place
             else:
-                regex += '[' + ''.join(possibilities) + ']'  # Ajoute les lettres entre crochets à l'expression régulière
+                regex += '[' + ''.join(possibilities) + ']'  # Add all possible letters at this place
         regex += '$'
         if "-v" in sys.argv or "--verbose" in sys.argv:
             print("Regex : [", regex, "]")

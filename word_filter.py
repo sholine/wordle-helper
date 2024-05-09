@@ -20,7 +20,7 @@ class WordFilter:
 
         # First filtering on possible remaining letters
         regex = possible_letters.generate_regex_from_letters()
-        compiled_regex = re.compile(regex)  # Compiler l'expression régulière une seule fois
+        compiled_regex = re.compile(regex)
         self.filtered_words = filter(lambda word: compiled_regex.match(word), self.filtered_words)
         #print("First filter : ", len(filtered_words))
 
@@ -82,7 +82,7 @@ class WordFilter:
 
     def __str__(self):
         output = ""
-        # Récupérer la largeur du terminal
+        # Retrieve the terminal width to adapt the number of words to display
         terminal_width = os.get_terminal_size().columns
 
         if len(self.filtered_words) > 0:
@@ -113,13 +113,14 @@ class WordFilter:
         lettersCounter = Counter("".join(self.filtered_words))
         lettersCounter = sorted(lettersCounter.items(), key=lambda x: x[1], reverse=True)
     
-        # Filtrer les tuples de lettersCounter dont les lettres ne sont pas dans possible_letters.tested_letters
+        # lettersCounter filtering to remove already tested letters
         temp_lettersCounter = []
         for letter, number in lettersCounter:
             if letter not in possible_letters.tested_letters:
               temp_lettersCounter.append((letter, number))
         lettersCounter = temp_lettersCounter
 
+        # Building list of word candidates. Starting from the longest size (5) and if nothing found, try with less (4), etc.
         res = []
         for i in range(5, 0, -1):
           if len(lettersCounter) >= i:
@@ -129,7 +130,7 @@ class WordFilter:
             regex += ''.join(f'(?=.*{lettre[0]})' for lettre in currentLetters)
             regex += '[a-zA-Z]*$'
 
-            compiled_regex = re.compile(regex)  # Compiler l'expression régulière une seule fois
+            compiled_regex = re.compile(regex)
             res = [word for word in self.all_words if compiled_regex.match(word)]
 
           if len(res) > 0:
