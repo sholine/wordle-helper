@@ -13,6 +13,7 @@ def main():
     possible_letters.update_possible_letters(input_string)
     word_filter.filter_words(possible_letters)
     word_filter.order_filtered_words()
+    word_filter.get_most_discriminant_words(possible_letters)
     print(word_filter)
 
 if __name__ == "__main__":

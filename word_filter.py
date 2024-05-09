@@ -2,6 +2,8 @@ import string
 import re
 import os
 
+from collections import Counter
+
 from possible_letters import PossibleLetters
 
 # Compute word scoring using French letters frequency and letters reuse
@@ -10,6 +12,8 @@ class WordFilter:
     def __init__(self, file_path: string):
         with open(file_path, 'r') as file:
             self.all_words = [word.strip().lower() for word in file.readlines()]
+        self.filtered_words = []
+        self.most_discriminant_words = []
     
     def filter_words(self, possible_letters: PossibleLetters):
         self.filtered_words = self.all_words
@@ -80,12 +84,52 @@ class WordFilter:
         # Récupérer la largeur du terminal
         terminal_width = os.get_terminal_size().columns
 
-        output += "Possible words:\n"
-        line_width = 0
-        for word in self.filtered_words:
-            if line_width + len(word) + 1 > terminal_width:
-                output += "\n"
-                line_width = 0
-            output += word + " "
-            line_width += len(word) + 1
+        if len(self.filtered_words) > 0:
+          output += "\033[1;32mPossible words:\033[0m\n"
+          line_width = 0
+          for word in self.filtered_words:
+              if line_width + len(word) + 1 > terminal_width:
+                  output += "\n"
+                  line_width = 0
+              output += word + " "
+              line_width += len(word) + 1
+          output += "\n\n"
+
+        if len(self.most_discriminant_words) > 0 and len(self.filtered_words) > 2:
+          output += "\033[1;32mMost discriminant words:\033[0m\n"
+          line_width = 0
+          for word in self.most_discriminant_words:
+              if line_width + len(word) + 1 > terminal_width:
+                  output += "\n"
+                  line_width = 0
+              output += word + " "
+              line_width += len(word) + 1
+          output += "\n"
+
         return output
+
+    def get_most_discriminant_words(self, possible_letters: PossibleLetters):
+        lettersCounter = Counter("".join(self.filtered_words))
+        lettersCounter = sorted(lettersCounter.items(), key=lambda x: x[1], reverse=True)
+    
+        # Filtrer les tuples de lettersCounter dont les lettres ne sont pas dans possible_letters.tested_letters
+        temp_lettersCounter = []
+        for letter, number in lettersCounter:
+            if letter not in possible_letters.tested_letters:
+              temp_lettersCounter.append((letter, number))
+        lettersCounter = temp_lettersCounter
+
+        res = []
+        for i in range(5, 0, -1):
+          if len(lettersCounter) >= i:
+            currentLetters = lettersCounter[:i]
+
+            regex = '^'
+            regex += ''.join(f'(?=.*{lettre[0]})' for lettre in currentLetters)
+            regex += '[a-zA-Z]*$'
+
+            res = [word for word in self.all_words if re.match(regex, word)]
+          if len(res) > 0:
+            break
+        
+        self.most_discriminant_words = res
