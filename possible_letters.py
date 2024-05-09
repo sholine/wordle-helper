@@ -6,12 +6,14 @@ class PossibleLetters:
         self.words_size = words_size
         self.word = [list(string.ascii_lowercase) for _ in range(words_size)]
         self.must_have = []
+        self.tested_letters = []
 
     def __str__(self):
-        output = "[Word]\n"
+        output = "\033[1;33m[Word]\033[0m\n"
         for i, letters in enumerate(self.word):
             output += f"  [Position {i}] => {letters}\n"
-        output += f"[Must Have] => {self.must_have}\n"
+        output += f"\033[1;33m[Must Have]\033[0m => {self.must_have}\n"
+        output += f"\033[1;33m[Tested Letters]\033[0m => {self.tested_letters}\n"
         return output
 
     def _apply_heuristics(self):
@@ -43,11 +45,15 @@ class PossibleLetters:
         input_string = input_string[input_string.find(')') + 1 :]
         
         for letter in excluded_letters:
+            if letter not in self.tested_letters:
+                self.tested_letters.append(letter)
             for possibilities in self.word:
                 if (len(possibilities) > 1 and letter in possibilities):
                   possibilities.remove(letter)
 
         for i, char in enumerate(input_string):
+            if char.lower() != '-' and char.lower() not in self.tested_letters:
+                self.tested_letters.append(char.lower())
             if char.islower():
                 if char in self.word[i]:
                   self.word[i].remove(char)
