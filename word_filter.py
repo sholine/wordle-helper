@@ -86,7 +86,8 @@ class WordFilter:
         terminal_width = os.get_terminal_size().columns
 
         if len(self.filtered_words) > 0:
-          output += "\033[1;32mPossible words:\033[0m\n"
+          output += "\033[1;32mPossible words:\033[0m"
+          output += f" {len(self.filtered_words)}\n"
           line_width = 0
           for word in self.filtered_words:
               if line_width + len(word) + 1 > terminal_width:
@@ -97,7 +98,8 @@ class WordFilter:
           output += "\n\n"
 
         if len(self.most_discriminant_words) > 0 and len(self.filtered_words) > 2:
-          output += "\033[1;32mMost discriminant words:\033[0m\n"
+          output += "\033[1;32mMost discriminant words:\033[0m"
+          output += f" {len(self.most_discriminant_words)}\n"
           line_width = 0
           for word in self.most_discriminant_words:
               if line_width + len(word) + 1 > terminal_width:
