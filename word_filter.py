@@ -24,9 +24,20 @@ class WordFilter:
         self.filtered_words = filter(lambda word: compiled_regex.match(word), self.filtered_words)
         #print("First filter : ", len(filtered_words))
 
-        # Second filtering: words MUST contains some letters
+        # Second filtering: words must contain each required letter at least as many
+        # times as known, and no more than the known exact count for capped (duplicate) letters
         must_have = possible_letters.must_have
-        self.filtered_words = filter(lambda word: all(letter in word for letter in must_have), self.filtered_words)
+        letter_max_count = possible_letters.letter_max_count
+        def matches_letter_counts(word):
+            counts = Counter(word)
+            for letter, min_count in must_have.items():
+                if counts[letter] < min_count:
+                    return False
+            for letter, max_count in letter_max_count.items():
+                if counts[letter] > max_count:
+                    return False
+            return True
+        self.filtered_words = filter(matches_letter_counts, self.filtered_words)
         #print("Second filter : ", len(filtered_words))
 
         return self.filtered_words
