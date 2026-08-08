@@ -41,8 +41,13 @@ class PossibleLetters:
               lowercase: if the letter is at the wrong place (orange letter)
               uppercase: if the letter is at the right place (green letter)
         """
-        excluded_letters = input_string[input_string.find('(') + 1 : input_string.find(')')]
-        input_string = input_string[input_string.find(')') + 1 :]
+        open_index = input_string.find('(')
+        close_index = input_string.find(')')
+        if open_index != -1 and close_index != -1:
+            excluded_letters = input_string[open_index + 1 : close_index]
+            input_string = input_string[close_index + 1 :]
+        else:
+            excluded_letters = ""
         
         for letter in excluded_letters:
             if letter not in self.tested_letters:
