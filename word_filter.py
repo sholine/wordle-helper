@@ -94,7 +94,11 @@ class WordFilter:
     def __str__(self):
         output = ""
         # Retrieve the terminal width to adapt the number of words to display
-        terminal_width = os.get_terminal_size().columns
+        # (falls back to 80 columns when not running in a real terminal, e.g. in tests or when piped)
+        try:
+            terminal_width = os.get_terminal_size().columns
+        except OSError:
+            terminal_width = 80
 
         if len(self.filtered_words) > 0:
           output += "\033[1;32mPossible words:\033[0m"
