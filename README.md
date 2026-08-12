@@ -29,3 +29,13 @@ By the way, the word dictionnary used in this tool has been also taken from the 
 ![Example 3](images/example3.jpg) `v- i r e E`
 
 Repeated letter example: guessing `RARES` against a word containing a single `r` (at an unknown position) gives `r a- r- e- s-` — the first `r` is orange (present, wrong place), the second `r` is grayed out because the word only has one `r`.
+
+## Tests
+
+The project has unit tests (`tests/test_possible_letters.py`, `tests/test_word_filter.py`) and functional/end-to-end tests (`tests/test_functional.py`, which run `wordle.py` as a real subprocess against the actual dictionary). Run them all with:
+
+```
+python -m unittest discover -s tests -t .
+```
+
+Tests run automatically on every push and pull request to `main` (see `.github/workflows/tests.yml`).
