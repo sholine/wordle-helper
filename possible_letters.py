@@ -21,10 +21,12 @@ class PossibleLetters:
         return output
 
     def _apply_heuristics(self):
-        # 1st heuristic: if a letter is missing exactly one more occurrence (in "Must have")
-        # and there is only 1 other possible position left for it, then we know where it goes!
-        for letter, min_count in list(self.must_have.items()):
-          if min_count != 1:
+        # 1st heuristic: if a letter is missing exactly one more occurrence (in "Must have",
+        # minus the occurrences already placed at a fixed position) and there is only 1 other
+        # possible position left for it, then we know where it goes!
+        for letter, min_count in self.must_have.items():
+          placed_count = sum(1 for letters in self.word if letters == [letter])
+          if min_count - placed_count != 1:
               continue
           index_unique_occurrence = None
           for i, letters in enumerate(self.word):
@@ -36,7 +38,6 @@ class PossibleLetters:
                       break
           if index_unique_occurrence is not None:
               self.word[index_unique_occurrence] = [letter]
-              del self.must_have[letter]
 
     def update_possible_letters(self, input_string: str):
         """Update all letters remaining possibilities regarding the user's input string
